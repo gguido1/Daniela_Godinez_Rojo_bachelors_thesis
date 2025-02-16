@@ -1,0 +1,296 @@
+---
+title: "PCA plot, trying"
+author: "Daniela"
+date: "2025-01-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+# Set working directory to the folder containing your files
+setwd("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/pGs_for_PCA ")
+
+# List all files with "pGroups" in their name and ending in "_wFDR.txt"
+file_list <- list.files(pattern = "pGroups.*_wFDR.txt$", full.names = TRUE)
+
+# Check the file list
+print(file_list)
+
+# List of all 20 pGroups_wFDR.txt files
+file_list <- c(
+  "./pGroups_Hv4_b1_RGT_wFDR.txt", "./pGroups_Hv4_b10_PED_wFDR.txt", 
+  "./pGroups_Hv4_b11_BAR_wFDR.txt", "./pGroups_Hv4_b12_PRO_wFDR.txt", 
+  "./pGroups_Hv4_b13_DIA_wFDR.txt", "./pGroups_Hv4_b14_MOR_wFDR.txt", 
+  "./pGroups_Hv4_b15_TRU_wFDR.txt", "./pGroups_Hv4_b16_FT11_wFDR.txt", 
+  "./pGroups_Hv4_b17_OPA_wFDR.txt", "./pGroups_Hv4_b18_ALE_wFDR.txt", 
+  "./pGroups_Hv4_b19_KRO_wFDR.txt", "./pGroups_Hv4_b2_acco_wFDR.txt", 
+  "./pGroups_Hv4_b20_HAN_wFDR.txt", "./pGroups_Hv4_b3_SLA_wFDR.txt", 
+  "./pGroups_Hv4_b4_OUN_wFDR.txt", "./pGroups_Hv4_b5_AA_wFDR.txt", 
+  "./pGroups_Hv4_b6_DUL_wFDR.txt", "./pGroups_Hv4_b7_VAL_wFDR.txt", 
+  "./pGroups_Hv4_b8_MIL_wFDR.txt", "./pGroups_Hv4_b9_137_wFDR.txt"
+)
+
+# Function to read and clean each file
+read_clean_file <- function(file) {
+  # Read the file
+  df <- read.table(file, header = TRUE, sep = "\t")
+  
+  # Extract Protein.IDs and Intensity columns
+  df <- df[, c("Protein.IDs", "Intensity")]
+  
+  # Use the file name (without extensions) as the sample name
+  sample_name <- gsub("_wFDR.txt", "", basename(file))  # Clean the file name
+  colnames(df)[2] <- sample_name  # Rename the intensity column to the sample name
+  
+  return(df)
+}
+
+# Merge all the files into one data frame
+merged_data <- Reduce(function(x, y) merge(x, y, by = "Protein.IDs", all = TRUE), 
+                      lapply(file_list, read_clean_file))
+
+# View the first few rows of the merged data
+head(merged_data)
+
+# Remove the Protein.IDs column (as it's not numeric)
+numeric_data <- merged_data[, -1]
+
+# Replace NAs with zeros (or you can also choose to remove rows with missing values)
+numeric_data[is.na(numeric_data)] <- 0
+
+# Standardize the data (important for PCA)
+numeric_data_scaled <- scale(numeric_data)
+
+# Perform PCA (if not already done)
+pca_result <- prcomp(numeric_data_scaled, center = TRUE, scale. = TRUE)
+
+# Extract PCA scores (projections of samples onto principal components)
+pca_data <- as.data.frame(pca_result$x)
+
+# Check the dimensions of the PCA data to confirm it's correct
+dim(pca_data)
+
+# Add sample names as row names to match the sample names in the columns
+# No need to transpose, we can use the row names directly
+pca_data$Sample <- rownames(pca_data)
+
+# View the first few rows to ensure correct formatting
+head(pca_data)
+
+# Extract PCA scores (projections of samples onto principal components)
+pca_data <- as.data.frame(pca_result$x)
+
+# Check the dimensions of the PCA data to confirm it's correct
+dim(pca_data)
+
+# Add sample names as row names to match the sample names in the columns
+# No need to transpose, we can use the row names directly
+pca_data$Sample <- rownames(pca_data)
+
+# Extract the relevant label part from the Sample name
+# Assuming the label (e.g., "RGT", "acco") comes after the last underscore
+pca_data$Label <- gsub(".*_(.*)", "\\1", pca_data$Sample)
+
+# View the first few rows to ensure correct formatting
+head(pca_data)
+
+# Load necessary library
+library(ggplot2)
+
+# Create the PCA plot with updated labels
+ggplot(pca_data, aes(x = PC1, y = PC2, label = Label)) +
+  geom_point(size = 3, color = "#5D8FC3") +  # Plot the points (samples)
+  labs(title = "Principal component analysis", x = "Principal Component 1", y = "Principal Component 2") +
+  theme_minimal() + 
+  theme(plot.title = element_text(hjust = 0.5))  # Center the title
+
+
+
+
+
+
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/general/PCA_Plot_version2.png")
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# trying again with another script to label the points 
+
+```{r cars}
+# Set working directory to the folder containing your files
+setwd("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/pGs_for_PCA ")
+
+# List all files with "pGroups" in their name and ending in "_wFDR.txt"
+file_list <- list.files(pattern = "pGroups.*_wFDR.txt$", full.names = TRUE)
+
+# Check the file list
+print(file_list)
+
+# List of all 20 pGroups_wFDR.txt files
+file_list <- c(
+  "./pGroups_Hv4_b1_RGT_wFDR.txt", "./pGroups_Hv4_b10_PED_wFDR.txt", 
+  "./pGroups_Hv4_b11_BAR_wFDR.txt", "./pGroups_Hv4_b12_PRO_wFDR.txt", 
+  "./pGroups_Hv4_b13_DIA_wFDR.txt", "./pGroups_Hv4_b14_MOR_wFDR.txt", 
+  "./pGroups_Hv4_b15_TRU_wFDR.txt", "./pGroups_Hv4_b16_FT11_wFDR.txt", 
+  "./pGroups_Hv4_b17_OPA_wFDR.txt", "./pGroups_Hv4_b18_ALE_wFDR.txt", 
+  "./pGroups_Hv4_b19_KRO_wFDR.txt", "./pGroups_Hv4_b2_acco_wFDR.txt", 
+  "./pGroups_Hv4_b20_HAN_wFDR.txt", "./pGroups_Hv4_b3_SLA_wFDR.txt", 
+  "./pGroups_Hv4_b4_OUN_wFDR.txt", "./pGroups_Hv4_b5_AA_wFDR.txt", 
+  "./pGroups_Hv4_b6_DUL_wFDR.txt", "./pGroups_Hv4_b7_VAL_wFDR.txt", 
+  "./pGroups_Hv4_b8_MIL_wFDR.txt", "./pGroups_Hv4_b9_137_wFDR.txt"
+)
+
+# Function to read and clean each file
+read_clean_file <- function(file) {
+  # Read the file
+  df <- read.table(file, header = TRUE, sep = "\t")
+  
+  # Extract Protein.IDs and Intensity columns
+  df <- df[, c("Protein.IDs", "Intensity")]
+  
+  # Extract variety name from the file name
+  sample_name <- gsub("_wFDR.txt", "", basename(file))  # Remove "_wFDR.txt"
+  sample_name <- gsub("pGroups_Hv4_b[0-9]+_", "", sample_name)  # Remove prefix
+
+  # Rename intensity column to the variety name
+  colnames(df)[2] <- sample_name  
+
+  return(df)
+}
+
+# Merge all files into one data frame
+merged_data <- Reduce(function(x, y) merge(x, y, by = "Protein.IDs", all = TRUE), 
+                      lapply(file_list, read_clean_file))
+
+# View first few rows of merged data
+head(merged_data)
+
+# Remove the Protein.IDs column (as it's not numeric)
+numeric_data <- merged_data[, -1]
+
+# Replace NAs with zeros (or remove rows with NAs if preferred)
+numeric_data[is.na(numeric_data)] <- 0
+
+# Ensure row names match sample names before PCA
+# Perform PCA
+# Transpose numeric data so that rows = varieties and columns = proteins
+numeric_data_t <- t(numeric_data)
+
+# Standardize the transposed data
+numeric_data_scaled <- scale(numeric_data_t)
+
+# Transpose numeric data so that rows = varieties and columns = proteins
+numeric_data_t <- t(numeric_data)
+
+# Identify and remove zero-variance columns
+zero_variance_cols <- apply(numeric_data_t, 2, var) == 0
+numeric_data_filtered <- numeric_data_t[, !zero_variance_cols]
+
+# Standardize the filtered data
+numeric_data_scaled <- scale(numeric_data_filtered)
+
+# Perform PCA on cleaned data
+pca_result <- prcomp(numeric_data_scaled, center = TRUE, scale. = TRUE)
+
+# Convert PCA results into a data frame
+pca_data <- as.data.frame(pca_result$x)
+
+# Assign file names (varieties) as row names
+pca_data$FileName <- rownames(pca_data)
+
+# Extract clean variety names for labeling
+pca_data$Variety <- gsub("pGroups_Hv4_b[0-9]+_|_wFDR.txt", "", pca_data$FileName)
+
+# View first few rows to confirm correct structure
+head(pca_data)
+
+
+# Perform PCA on correctly structured data
+pca_result <- prcomp(numeric_data_scaled, center = TRUE, scale. = TRUE)
+
+# Convert PCA results into a data frame
+pca_data <- as.data.frame(pca_result$x)
+
+# Assign file names (varieties) as row names
+pca_data$FileName <- rownames(pca_data)
+
+# Extract clean variety names for labeling
+pca_data$Variety <- gsub("pGroups_Hv4_b[0-9]+_|_wFDR.txt", "", pca_data$FileName)
+
+# View first few rows to confirm correct structure
+head(pca_data)
+
+
+# Convert PCA results into a data frame
+pca_data <- as.data.frame(pca_result$x)
+
+# Ensure correct row names (each row corresponds to a sample/variety)
+pca_data$FileName <- colnames(numeric_data)  # Assign original file names
+
+# Extract only the variety name for cleaner labeling
+pca_data$Variety <- gsub("pGroups_Hv4_b[0-9]+_|_wFDR.txt", "", pca_data$FileName)
+
+# View first few rows to check labels
+head(pca_data)
+
+
+# Standardize the data (important for PCA)
+numeric_data_scaled <- scale(numeric_data)
+
+# Perform PCA
+pca_result <- prcomp(numeric_data_scaled, center = TRUE, scale. = TRUE)
+
+# Convert PCA results into a data frame
+pca_data <- as.data.frame(pca_result$x)
+
+# Add original file names as a column
+pca_data$FileName <- rownames(pca_data)
+
+# Extract only the variety name for cleaner labeling
+pca_data$Variety <- gsub("pGroups_Hv4_b[0-9]+_|_wFDR.txt", "", pca_data$FileName)
+
+# View first few rows to check labels
+head(pca_data)
+
+# Load necessary libraries
+library(ggplot2)
+library(ggrepel)
+
+# Create the PCA plot with labels
+pca_plot <- ggplot(pca_data, aes(x = PC1, y = PC2, label = Variety)) +
+  geom_point(size = 3, color = "#5D8FC3") +  # Plot the points (samples)
+  geom_text_repel(size = 4, max.overlaps = 20) +  # Avoid label overlap
+  labs(title = "Principal Component Analysis of Barley Varieties", 
+       x = "Principal Component 1", y = "Principal Component 2") +
+  theme_minimal() + 
+  theme(plot.title = element_text(hjust = 0.5))  # Center the title
+
+# Display the plot
+print(pca_plot)
+
+# Save the PCA plot
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/general/PCA_Plot_version2.png", 
+       plot = pca_plot, width = 8, height = 6, dpi = 300)
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

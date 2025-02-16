@@ -1,0 +1,572 @@
+---
+title: "DApipe_HvGerm_Exp4"
+author: "Guido Giordano"
+date: "2023-04-18"
+output: html_document
+---
+#This is the pipeline for data analysis for barley germination experiment 4
+
+#Load packages
+```{r}
+library(dplyr)
+library(readr)
+library(tidyr)
+library(ggplot2)
+library(ggbreak)
+library(cowplot)
+library(stringr)
+library(kableExtra)
+library(clusterProfiler)
+library(mice)
+library(reshape2)
+library(data.table)
+```
+#Calculate the digestion efficiency. This is directly connected with the goodness of protein identification. this already done in the other pipe 
+
+```{r}
+
+#Load evidence (TD) file. 
+evidence_Hv4_b5<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b5.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b6<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b6.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b7<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b7.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b8<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b8.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b9<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b9.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b10<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b10.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b11<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b11.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b12<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b12.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b13<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b13.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b14<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b14.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b15<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b15.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b16<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b16.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b17<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b17.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b18<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b18.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b19<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b19.txt", header = TRUE, sep = "\t")
+
+evidence_Hv4_b20<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/MQ_evidencefiles/evidence_Hv4_b20.txt", header = TRUE, sep = "\t")
+
+#Generate a bar plot from the column missed cleavages
+ggplot(evidence_Hv4_b5, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch5)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch5.png")
+
+ggplot(evidence_Hv4_b6, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch6)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch6.png")
+
+ggplot(evidence_Hv4_b7, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch7)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch7.png")
+
+ggplot(evidence_Hv4_b8, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch8)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch8.png")
+
+ggplot(evidence_Hv4_b9, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch9)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch9.png")
+
+ggplot(evidence_Hv4_b10, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch10)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch10.png")
+
+ggplot(evidence_Hv4_b11, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch11)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch11.png")
+
+ggplot(evidence_Hv4_b12, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch12)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch12.png")
+
+ggplot(evidence_Hv4_b13, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch13)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch13.png")
+
+ggplot(evidence_Hv4_b14, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch14)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch14.png")
+
+ggplot(evidence_Hv4_b15, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch15)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch15.png")
+
+ggplot(evidence_Hv4_b16, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch16)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch16.png")
+
+ggplot(evidence_Hv4_b17, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch17)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch17.png")
+
+ggplot(evidence_Hv4_b18, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch18)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch18.png")
+
+ggplot(evidence_Hv4_b19, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch19)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch19.png")
+
+ggplot(evidence_Hv4_b20, aes(x = factor(Missed.cleavages))) +
+  geom_bar(fill = "#105CB6", color="black") +
+  labs(title = "Tryptic digestion efficiency (Hv4_batch20)",
+       x = "Missed Cleavages",
+       y = "Count") +
+ theme_classic() +
+  theme(plot.title = element_text(size = 14, family = "", face = "plain"),  
+      axis.title = element_text(size = 12, family = "", face = "plain"),
+        axis.text = element_text(size = 12, family = "", face = "plain")) +
+  theme(plot.title = element_text(hjust = 0.5, margin = margin(b = 10)),
+        axis.title.x = element_text(margin = margin(t = 8)),
+        axis.title.y = element_text(margin = margin(r = 15)))
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Tryptic_digestion_efficiency/barplot_TrypDig_batch20.png")
+
+```
+
+
+#Calculate the total number of MS3 spectra acquired per batch
+
+```{r}
+#Load summary file 
+summary_b1<- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b1_summary.txt", header = TRUE, sep = "\t")
+summary_b2 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b2_summary.txt", header = TRUE, sep = "\t")
+summary_b3 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b3_summary.txt", header = TRUE, sep = "\t")
+summary_b4 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b4_summary.txt", header = TRUE, sep = "\t")
+summary_b5 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b5_summary.txt", header = TRUE, sep = "\t")
+summary_b6 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b6_summary.txt", header = TRUE, sep = "\t")
+summary_b7 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b7_summary.txt", header = TRUE, sep = "\t")
+summary_b8 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b8_summary.txt", header = TRUE, sep = "\t")
+summary_b9 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b9_summary.txt", header = TRUE, sep = "\t")
+summary_b10 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b10_summary.txt", header = TRUE, sep = "\t")
+summary_b11 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b11_summary.txt", header = TRUE, sep = "\t")
+summary_b12 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b12_summary.txt", header = TRUE, sep = "\t")
+summary_b13 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b13_summary.txt", header = TRUE, sep = "\t")
+summary_b14 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b14_summary.txt", header = TRUE, sep = "\t")
+summary_b15 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b15_summary.txt", header = TRUE, sep = "\t")
+summary_b16 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b16_summary.txt", header = TRUE, sep = "\t")
+summary_b17 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b17_summary.txt", header = TRUE, sep = "\t")
+summary_b18 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b18_summary.txt", header = TRUE, sep = "\t")
+summary_b19 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b19_summary.txt", header = TRUE, sep = "\t")
+summary_b20 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/summary_files/b20_summary.txt", header = TRUE, sep = "\t")
+
+
+
+# Create MS3 values for batches 1 to 20 with random numbers around 500000 (here update with real values in the summary files for each batch)
+MS3_b1 <- summary_b1[49, 22]
+MS3_b2 <- summary_b2[49, 22]
+MS3_b3 <- summary_b3[49, 22]
+MS3_b4 <- summary_b4[46, 22]
+MS3_b5 <- summary_b5[49, 22]
+MS3_b6 <- summary_b6[49, 22]
+MS3_b7 <- summary_b7[49, 22]
+MS3_b8 <- summary_b8[49, 22]
+MS3_b9 <- summary_b9[49, 22]
+MS3_b10 <- summary_b10[49, 22]
+MS3_b11 <- summary_b11[49, 22]
+MS3_b12 <- summary_b12[49, 22]
+MS3_b13 <- summary_b13[49, 22]
+MS3_b14 <- summary_b14[49, 22]
+MS3_b15 <- summary_b15[49, 22]
+MS3_b16 <- summary_b16[49, 22]
+MS3_b17 <- summary_b17[49, 22]
+MS3_b18 <- summary_b18[49, 22]
+MS3_b19 <- summary_b19[49, 22]
+MS3_b20 <- summary_b20[49, 22]
+
+
+# Assign batch names and values and create a df 
+batch_names <- paste0("Batch ", 1:20)
+MS3_values <- c(MS3_b1, MS3_b2, MS3_b3, MS3_b4, MS3_b5, MS3_b6, MS3_b7, MS3_b8, MS3_b9, MS3_b10, 
+                MS3_b11, MS3_b12, MS3_b13, MS3_b14, MS3_b15, MS3_b16, MS3_b17, MS3_b18, MS3_b19, MS3_b20)
+
+data <- data.frame(Batch = batch_names, MS3 = MS3_values)
+
+# Generate bar plot with individual colors
+colors <- scales::hue_pal()(20)  # 20 distinct colors per batch 
+
+ggplot(data, aes(x = Batch, y = MS3, fill = Batch)) +
+  geom_bar(stat = "identity", color = "black", width = 0.7) +
+  scale_fill_manual(values = colors) +
+  labs(title = "Total Number of MS3 Spectra per Batch",
+       x = "Batch",
+       y = "Total MS3 Spectra") +
+  theme_classic() +
+  theme(plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
+        axis.title = element_text(size = 12, face = "plain"),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/general/Number_MS3_Spectra_per_Batch.png")
+
+
+# generating a new plot so that batches appear in order 
+
+# Assign batch names and values
+batch_names <- paste0("Batch ", 1:20)
+MS3_values <- c(MS3_b1, MS3_b2, MS3_b3, MS3_b4, MS3_b5, MS3_b6, MS3_b7, MS3_b8, MS3_b9, MS3_b10, 
+                MS3_b11, MS3_b12, MS3_b13, MS3_b14, MS3_b15, MS3_b16, MS3_b17, MS3_b18, MS3_b19, MS3_b20)
+
+# Create data frame
+data <- data.frame(Batch = batch_names, MS3 = MS3_values)
+
+# Ensure the 'Batch' column is a factor with the correct order
+data$Batch <- factor(data$Batch, levels = batch_names)
+
+# Plot the data
+colors <- scales::hue_pal()(20)  # 20 distinct colors per batch 
+
+ggplot(data, aes(x = Batch, y = MS3, fill = Batch)) +
+  geom_bar(stat = "identity", color = "black", width = 0.7) +
+  scale_fill_manual(values = colors) +
+  labs(title = "Total Number of MS3 Spectra per Batch",
+       x = "Batch",
+       y = "Total MS3 Spectra") +
+  theme_classic() +
+  theme(plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
+        axis.title = element_text(size = 12, face = "plain"),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Number_MS3_Spectra_per_Batch.png")
+
+# Define a cooler, more scientific color palette with blues, purples, and pinks
+colors_degraded <- c(
+  "#4A3974", "#3C2A6E", "#2D1C6F", "#2E3A8C", "#3B6C93","#5E4A8B", "#6A4C8C","#9B80C3", "#7D62B9", 
+  "#8B95C6","#4C72B0","#5C6EB1", "#6E7DB3", "#3A8DB3", "#A4B8D2", 
+  "#A4A6C1", "#B2B6C8", "#8C90B5",   
+   "#72A1C2",   "#5495B7"
+)
+
+ggplot(data, aes(x = Batch, y = MS3, fill = Batch)) +
+  geom_bar(stat = "identity", color = "black", width = 0.7) +
+  scale_fill_manual(values = colors) +
+  labs(title = "Total Number of MS3 Spectra per Batch",
+       x = "Batch",
+       y = "Total MS3 Spectra") +
+  theme_classic() +
+  theme(plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
+        axis.title = element_text(size = 12, face = "plain"),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Number_MS3_Spectra_per_Batch_version2.png")
+
+# Define a cooler to warmer color palette
+colors_degraded <- c(
+  "#4A3974", "#3C2A6E", "#2D1C6F", "#2E3A8C", "#3B6C93","#5E4A8B", "#6A4C8C","#9B80C3", "#7D62B9", 
+  "#8B95C6","#4C72B0","#5C6EB1", "#6E7DB3", "#3A8DB3", "#A4B8D2", 
+  "#A4A6C1", "#B2B6C8", "#8C90B5",   
+   "#72A1C2",   "#5495B7"
+)
+
+# Rearranged color order from cooler to warmer
+colors_degraded <- c(
+  "#4A3974", "#3C2A6E", "#2D1C6F", "#2E3A8C", "#3B6C93","#5E4A8B", "#6A4C8C","#9B80C3", "#7D62B9", 
+  "#8B95C6","#4C72B0","#5C6EB1", "#6E7DB3", "#3A8DB3", "#A4B8D2", 
+  "#A4A6C1", "#B2B6C8", "#8C90B5",   
+   "#72A1C2",   "#5495B7"
+)
+
+# Plot with the new "degrading" color palette
+ggplot(data, aes(x = Batch, y = MS3, fill = Batch)) +
+  geom_bar(stat = "identity", color = "black", width = 0.7) +
+  scale_fill_manual(values = colors_degraded) +
+  labs(title = "Total Number of MS3 Spectra per Batch",
+       x = "Batch",
+       y = "Total MS3 Spectra") +
+  theme_classic() +
+  theme(plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
+        axis.title = element_text(size = 12, face = "plain"),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/Number_MS3_Spectra_per_Batch_degraded.png")
+
+
+```
+#Calculate thesequence coverage 
+
+```{r}
+# Import the pG tables
+pG_Hv4_b1_RGT <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b1_RGT_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b2_acco <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b2_acco_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b3_SLA <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b3_SLA_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b4_OUN <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b4_OUN_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b5_AA <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b5_AA_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b6_DUL <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b6_DUL_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b7_VAL <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b7_VAL_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b8_MIL <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b8_MIL_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b9_137 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b9_137_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b10_PED <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b10_PED_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b11_BAR <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b11_BAR_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b12_PRO <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b12_PRO_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b13_DIA <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b13_DIA_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b14_MOR <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b14_MOR_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b15_TRU <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b15_TRU_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b16_FT11 <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b16_FT11_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b17_OPA <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b17_OPA_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b18_ALE <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b18_ALE_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b19_KRO <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b19_KRO_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+pG_Hv4_b20_HAN <- read.table("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_import/Hv4/rescored_pGs/pGroups_Hv4_b20_HAN_wFDR.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# Define row counts for each batch
+row_counts <- c(
+  nrow(pG_Hv4_b1_RGT), nrow(pG_Hv4_b2_acco), nrow(pG_Hv4_b3_SLA), nrow(pG_Hv4_b4_OUN), 
+  nrow(pG_Hv4_b5_AA), nrow(pG_Hv4_b6_DUL), nrow(pG_Hv4_b7_VAL), nrow(pG_Hv4_b8_MIL), 
+  nrow(pG_Hv4_b9_137), nrow(pG_Hv4_b10_PED), nrow(pG_Hv4_b11_BAR), nrow(pG_Hv4_b12_PRO),
+  nrow(pG_Hv4_b13_DIA), nrow(pG_Hv4_b14_MOR), nrow(pG_Hv4_b15_TRU), nrow(pG_Hv4_b16_FT11),
+  nrow(pG_Hv4_b17_OPA), nrow(pG_Hv4_b18_ALE), nrow(pG_Hv4_b19_KRO), nrow(pG_Hv4_b20_HAN)
+)
+
+# Create a vector of batch labels repeated according to the row counts
+batch_labels <- rep(paste0("Batch ", 1:20), row_counts)
+
+# Combine all the coverage data from the 20 batches
+coverage_data <- c(
+  pG_Hv4_b1_RGT[, 21], pG_Hv4_b2_acco[, 21], pG_Hv4_b3_SLA[, 21], pG_Hv4_b4_OUN[, 21], 
+  pG_Hv4_b5_AA[, 21], pG_Hv4_b6_DUL[, 21], pG_Hv4_b7_VAL[, 21], pG_Hv4_b8_MIL[, 21], 
+  pG_Hv4_b9_137[, 21], pG_Hv4_b10_PED[, 21], pG_Hv4_b11_BAR[, 21], pG_Hv4_b12_PRO[, 21],
+  pG_Hv4_b13_DIA[, 21], pG_Hv4_b14_MOR[, 21], pG_Hv4_b15_TRU[, 21], pG_Hv4_b16_FT11[, 21],
+  pG_Hv4_b17_OPA[, 21], pG_Hv4_b18_ALE[, 21], pG_Hv4_b19_KRO[, 21], pG_Hv4_b20_HAN[, 21]
+)
+
+# Create the data frame
+seq_cov_data <- data.frame(
+  Batch = batch_labels,
+  Coverage = coverage_data
+)
+
+
+
+# Set the Batch column as a factor with a specific order
+seq_cov_data$Batch <- factor(seq_cov_data$Batch, levels = paste0("Batch ", 1:20))
+
+# Generate the violin plot with all 20 batches in the correct order
+ggplot(seq_cov_data, aes(x = Batch, y = Coverage, fill = Batch)) +
+  geom_violin(trim = FALSE, color = "black") +
+  geom_boxplot(width = 0.1, color = "black", fill = "white", outlier.size = 0.5) +
+  labs(title = "Sequence Coverage Distribution by Batch",
+       x = "Batch",
+       y = "Sequence Coverage") +
+  theme_classic() +
+  theme(plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
+        axis.title = element_text(size = 12, face = "plain"),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        legend.position = "none")
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/general/violin_plot.png")
+  
+
+# Define the cooler, more scientific color palette with blues, purples, and pinks
+colors <- c(
+  "#4C72B0", "#5C6EB1", "#6E7DB3", "#8C90B5", "#A4A6C1", 
+  "#B2B6C8", "#9B80C3", "#7D62B9", "#6A4C8C", "#5E4A8B", 
+  "#4A3974", "#3C2A6F", "#2D1C6F", "#2E3A8C", "#3B6C93", 
+  "#3A8DB3", "#5495B7", "#72A1C2", "#8B95C6", "#A4B8D2"
+)
+
+# Set the Batch column as a factor with a specific order
+seq_cov_data$Batch <- factor(seq_cov_data$Batch, levels = paste0("Batch ", 1:20))
+
+# Generate the violin plot with all 20 batches in the correct order
+ggplot(seq_cov_data, aes(x = Batch, y = Coverage, fill = Batch)) +
+  geom_violin(trim = FALSE, color = "black") +
+  geom_boxplot(width = 0.1, color = "black", fill = "white", outlier.size = 0.5) +
+  labs(title = "Sequence Coverage Distribution by Batch",
+       x = "Batch",
+       y = "Sequence Coverage") +
+  theme_classic() +
+  theme(plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
+        axis.title = element_text(size = 12, face = "plain"),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        legend.position = "none") +
+  scale_fill_manual(values = colors)
+
+ggsave("/Users/danielagodinezrojo/Desktop/Bachelorthesis/R/R_export/Hv4/DApipe_HvGerm_Exp4/general/violin_plot.png")
+
+
+
+
+```
+```
+
